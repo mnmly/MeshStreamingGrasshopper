@@ -1,6 +1,10 @@
 # MeshStreamingGrasshopper
 Plugin for Grasshopper to stream mesh geometry through web socket.
 
+
+*Modifications*
+- `MeshSerializeComponent` can also send data as JSON rathter than `ZeroFormatter` via `JSON` boolean.
+
 ## Dependencies
 - [SocketIoClientDotNet](https://github.com/Quobject/SocketIoClientDotNet)
 - [ZeroFormatter](https://github.com/neuecc/ZeroFormatter)
