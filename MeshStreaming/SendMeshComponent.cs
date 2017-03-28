@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 using Grasshopper.Kernel;
 using Rhino.Geometry;
@@ -28,6 +31,8 @@ namespace MeshStreaming
             pManager.AddGenericParameter("Bytes", "Bytes", "Bytes to send", GH_ParamAccess.item);
             pManager.AddGenericParameter("Socket", "Socket", "Socket Data", GH_ParamAccess.item);
             pManager.AddBooleanParameter("Send", "Send", "Send data", GH_ParamAccess.item);
+			pManager.AddBooleanParameter("JSON", "JSON", "Use JSON Format", GH_ParamAccess.item);
+
         }
 
         /// <summary>
@@ -49,24 +54,34 @@ namespace MeshStreaming
 			var meshObj = new JObject();
             Socket socket = null;
             bool send = false;
+			bool useJSON = false;
 
-			if (!DA.GetData(0, ref meshObj) && DA.GetData(0, ref bytes)) return;
+
+			if (!DA.GetData(3, ref useJSON)) return;
+			if (useJSON)
+			{
+				if (!DA.GetData(0, ref meshObj)) return;
+			}
+			else
+			{
+				if (!DA.GetData(0, ref bytes)) return;
+			}
+
             if (!DA.GetData(1, ref socket)) return;
             if (!DA.GetData(2, ref send)) return;
 
-
-            if (socket != null)
+			if (socket != null)
             {
                 if (send)
                 {
                     var obj = new JObject();
-					if (bytes.Length > 0)
+					if (useJSON)
 					{
-						obj["mesh"] = bytes;
+						obj["mesh"] = meshObj;
 					}
 					else
 					{
-						obj["mesh"] = meshObj;
+						obj["mesh"] = bytes;
 					}
                     
                     socket.Emit("gh", obj);
@@ -105,5 +120,29 @@ namespace MeshStreaming
         {
             get { return new Guid("{690860ff-e5b0-4fcf-aff7-8c74a4be0579}"); }
         }
+		// Convert an object to a byte array
+		private byte[] ObjectToByteArray(Object obj)
+		{
+			if (obj == null)
+				return null;
+
+			BinaryFormatter bf = new BinaryFormatter();
+			MemoryStream ms = new MemoryStream();
+			bf.Serialize(ms, obj);
+
+			return ms.ToArray();
+		}
+
+		// Convert a byte array to an Object
+		private JObject ByteArrayToObject(byte[] arrBytes)
+		{
+			MemoryStream memStream = new MemoryStream();
+			BinaryFormatter binForm = new BinaryFormatter();
+			memStream.Write(arrBytes, 0, arrBytes.Length);
+			memStream.Seek(0, SeekOrigin.Begin);
+			JObject obj = (JObject)binForm.Deserialize(memStream);
+
+			return obj;
+		}
     }
 }
