@@ -46,10 +46,11 @@ namespace MeshStreaming
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             byte[] bytes = new byte[0];
+			var meshObj = new JObject();
             Socket socket = null;
             bool send = false;
 
-            if (!DA.GetData(0, ref bytes)) return;
+			if (!DA.GetData(0, ref meshObj) && DA.GetData(0, ref bytes)) return;
             if (!DA.GetData(1, ref socket)) return;
             if (!DA.GetData(2, ref send)) return;
 
@@ -59,8 +60,14 @@ namespace MeshStreaming
                 if (send)
                 {
                     var obj = new JObject();
-                    obj["mesh"] = bytes;
-                    
+					if (bytes.Length > 0)
+					{
+						obj["mesh"] = bytes;
+					}
+					else
+					{
+						obj["mesh"] = meshObj;
+					}
                     
                     socket.Emit("gh", obj);
 
@@ -83,9 +90,10 @@ namespace MeshStreaming
         {
             get
             {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-                return MeshStreaming.Properties.Resources.Send_Mesh;
+				//You can add image files to your project resources and access them like this:
+				// return Resources.IconForThisComponent;
+				//return MeshStreaming.Properties.Resources.Send_Mesh;
+				return null;
                 
             }
         }

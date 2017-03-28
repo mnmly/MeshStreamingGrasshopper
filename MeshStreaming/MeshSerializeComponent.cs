@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using Grasshopper.Kernel;
 using Rhino.Geometry;
 using ZeroFormatter;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace MeshStreaming
 {
@@ -29,6 +32,7 @@ namespace MeshStreaming
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddMeshParameter("Mesh", "Mesh", "Mesh to serialize", GH_ParamAccess.item);
+			pManager.AddBooleanParameter("JSON", "JSON", "Is JSON", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -47,14 +51,24 @@ namespace MeshStreaming
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             Mesh mesh = new Mesh();
+			bool isJSON = false;
 
             if (!DA.GetData(0, ref mesh)) return;
+			if (!DA.GetData(1, ref isJSON)) return;
 
             mesh.Normals.ComputeNormals();
             CustomMesh customMesh = Utils.InitCustomMesh(mesh);
-            var bytes = ZeroFormatterSerializer.Serialize(customMesh);
-
-            DA.SetData(0, bytes);
+			if (isJSON)
+			{
+				var obj = JObject.FromObject(customMesh);
+				DA.SetData(0, obj);
+			}
+			else
+			{
+				byte[] bytes;
+				bytes = ZeroFormatterSerializer.Serialize(customMesh);
+				DA.SetData(0, bytes);
+			}
         }
 
         /// <summary>
@@ -67,8 +81,8 @@ namespace MeshStreaming
             {
                 // You can add image files to your project resources and access them like this:
                 //return Resources.IconForThisComponent;
-                //return null;
-                return MeshStreaming.Properties.Resources.Serialize;
+                return null;
+                //return MeshStreaming.Properties.Resources.Serialize;
             }
         }
 
