@@ -35,7 +35,7 @@ Plugin for Grasshopper to stream mesh geometry through web socket with example t
 
 ## Usage
 
-![](http://c.mnmly.com/jl8k/Image%202017-03-28%20at%201.07.11%20AM.png)
+![](http://c.mnmly.com/kThn/Image%202017-05-15%20at%206.49.18%20PM.png)
 
 Refer to [compatible websocket server example](https://github.com/mnmly/MeshStreamingServer/tree/feature/json)
 
