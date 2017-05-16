@@ -46,7 +46,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin</OutputPath>
+    <OutputPath>..\..\..\..\..\..\Library\Application Support\McNeel\Rhinoceros\MacPlugIns\Grasshopper\Libraries\MeshStreaming</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
@@ -82,6 +82,7 @@
     </Reference>
     <Reference Include="Grasshopper">
       <HintPath>..\..\..\..\..\..\..\..\Applications\RhinoWIP.app\Contents\Resources\ManagedPlugIns\GrasshopperPlugin.rhp\Grasshopper.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -179,15 +180,7 @@ rm "$(TargetPath)"</PostBuildEvent>
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'macOS Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>.</OutputPath>
   </PropertyGroup>

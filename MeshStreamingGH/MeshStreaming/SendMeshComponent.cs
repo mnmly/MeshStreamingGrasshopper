@@ -43,6 +43,8 @@ namespace MeshStreaming
         {
             pManager.AddTextParameter("Status", "Status", "Socket status", GH_ParamAccess.item);
             pManager.AddIntegerParameter("Length", "Length", "Sent data length", GH_ParamAccess.list);
+
+
         }
 
         /// <summary>
@@ -59,21 +61,25 @@ namespace MeshStreaming
             bool send = false;
             List<int> dataLengthList = new List<int>();
             string targetEvent = "";
+			int objectCount = 0;
 
 			if (!DA.GetData(4, ref useJSON)) return;
 
             if (useJSON)
             {
                 if (!DA.GetDataList(0, objList)) return;
+                objectCount = objList.Count;
             }
             else
             {
                 if (!DA.GetDataList(0, bytesList)) return;
-			}
+                objectCount = bytesList.Count;
+            }
 
             if (!DA.GetData(1, ref socket)) return;
             if (!DA.GetData(2, ref targetEvent)) return;
             if (!DA.GetData(3, ref send)) return;
+
 
             if (socket != null)
             {
@@ -81,12 +87,15 @@ namespace MeshStreaming
                 {
                     var objs = new JArray();
 
-                    for (int i = 0; i < bytesList.Count; i++)
+                    for (int i = 0; i < objectCount; i++)
                     {
                         var obj = new JObject();
-                        obj["mesh"] = useJSON ? (JObject)bytesList[i] : objList[i];
+                        obj["mesh"] = useJSON ? objList[i] : (JObject)bytesList[i];
                         objs.Add(obj);
-                        dataLengthList.Add(bytesList[i].Length);
+                        if (!useJSON)
+                        {
+                            dataLengthList.Add(bytesList[i].Length);
+                        }
                     }
 
                     socket.Emit(targetEvent, objs);
@@ -99,7 +108,7 @@ namespace MeshStreaming
                 }
             }else
             {
-                DA.SetData(0, "Cocket is Null");
+                DA.SetData(0, "Socket is Null");
             }
         }
 
